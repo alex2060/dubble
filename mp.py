@@ -2,6 +2,15 @@ import sympy
 from sympy import *
 import numpy as np
 from numpy import linalg as LA
+from numpy.linalg import inv
+
+def powervec(x,number_of_floors):
+	vewc=np.zeros((number_of_floors))
+	for x in range(number_of_floors):
+		vewc[x]=1
+	return vewc
+
+
 t=Symbol('t')
 
 number_of_floors=5
@@ -123,10 +132,13 @@ for x in range(number_of_floors):
 valk=[0]*(number_of_floors+1)
 for x in range(number_of_floors+1):
 	valk[x]=2
+
 valmass=[0]*number_of_floors
+
 #defining mass
 for x in range(number_of_floors):
 	valmass[x]=1
+
 #replaceing k and m in matrix
 
 for x in range(number_of_floors):
@@ -149,8 +161,10 @@ for x in range(number_of_floors):
 		matrix[x][y]=commat[x*number_of_floors+y]
 print("np matrix")
 print(matrix)
-egonval=LA.eig(matrix)
 
+
+egonval=LA.eig(matrix)
+invA=inv(matrix)
 print(egonval[1][1])
 
 
@@ -168,7 +182,36 @@ for x in range(number_of_floors):
 		f_1_l[y]+=egonval[1][x][y]*add
 
 print(f_1_l[0])
+f_1_1mat=Matrix(f_1_l)
 
+print(f_1_1mat)
+
+
+
+
+## solving f_2_1
+
+powerseries=[""]*3
+
+for x in range(len(powerseries)):
+	powerseries[x]=powervec(x,number_of_floors)
+solve=powerseries
+
+
+powerF_2_1mat=[""]*len(powerseries)
+mult=len(powerseries)
+
+for x in range(len(powerseries)):
+	powerF_2_1mat[mult-x-1]=np.dot(solve[mult-x-1],invA)
+	if (mult-x-3)>=0:
+		solve[mult-x-3]=solve[mult-x-1]-powerF_2_1mat[mult-x-1]*((mult-x-2)*(mult-x-1))
+
+
+print(powerF_2_1mat[0])
+
+
+
+#f_2_1mat
 
 
 # we just need the f_2_1 vector and we are done unless we set our intial force to 0 in with case were done anyway
